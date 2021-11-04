@@ -2,9 +2,17 @@ import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../styles/Home.module.css'
 import Link from 'next/link';
-import { people as data } from '../data/people'
+import useSWR from 'swr';
 
-export default function Home() {
+export default function Home({ data }) {
+
+  // const { data, error } = useSWR(`/api/people`,
+  // (...args) => fetch(...args).then(res => res.json()))
+
+  // console.log("data", data);
+
+  if(!data) return <div>Loading....</div>
+
   return (
     <div className={styles.container}>
       <Head>
@@ -39,4 +47,18 @@ export default function Home() {
       </footer>
     </div>
   )
+}
+
+export async function getStaticProps() {
+
+  // cannot use hooks inside here  
+  const res = await fetch(`https://nextjs-demo-nov5-21.vercel.app/api/people`)
+  const data = await res.json()
+  // By returning { props: data }, the Onw component
+  // will receive `data` as a prop at build time
+  return {
+    props: {
+      data,
+    },
+  }
 }
